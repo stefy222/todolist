@@ -18,7 +18,7 @@ body {
 h1 {
   margin: 0;
   padding: 9px 12px 13px;
-  background: #ffc107;
+  background: #ff8f07;
   font-size: 28px;
   line-height: 33px;
   text-align: center;
@@ -66,7 +66,65 @@ button {
   cursor: pointer;
 }
 
-.btn-agregar { background: #198754; }
+.btnAdd { background: #17a462; }
+
+.lista-tareas {
+  margin-top: 12px;
+  border: 1px solid #dee2e6;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+#listaTareas {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.lista-tareas li {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  grid-template-areas:
+    "titulo eliminar editar"
+    "descripcion eliminar editar";
+  align-items: center;
+  column-gap: 16px;
+  padding: 12px 16px;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.lista-tareas li:last-child { border-bottom: 0; }
+
+.lista-tareas h3 {
+  grid-area: titulo;
+  margin: 0 0 5px;
+  font-size: 14px;
+}
+
+.lista-tareas p {
+  grid-area: descripcion;
+  margin: 0;
+  color: #495057;
+}
+
+.lista-tareas li > button {
+  flex: 0 0 auto;
+}
+
+.lista-tareas li > button:first-of-type {
+  grid-area: eliminar;
+  background: #dc3545;
+}
+
+.lista-tareas li > button:first-of-type:hover { background: #bb2d3b; }
+
+.lista-tareas li > button:last-of-type {
+  grid-area: editar;
+  background: #ffc107;
+  color: #212529;
+}
+
+.lista-tareas li > button:last-of-type:hover { background: #e0a800; }
 
 @media (max-width: 560px) {
   .contenedor { margin: 10px 12px 0; }
