@@ -18,30 +18,27 @@ function agregarTarea() {
         return;
     }
 
-     if (idEditar === null) {
-
-    tareas.push({
-        id: siguienteId++,
-        titulo: tarea,
-        descripcion: descripcion
-    });
+    if (idEditar === null) {
+        tareas.push({
+            id: siguienteId++,
+            titulo: tarea,
+            descripcion: descripcion,
+            completada: false
+        });
+    } else {
+        const tareaEditar = tareas.find(function(t) {
+            return t.id === idEditar;
+        });
+        if (tareaEditar === undefined) {
+            idEditar = null;
+            return;
+        }
+        tareaEditar.titulo = tarea;
+        tareaEditar.descripcion = descripcion;
+        idEditar = null;
     }
-
-    else { 
-       const tareaEditar = tareas.find(function(t) {
-    return t.id === idEditar;
-    });
-
-    tareaEditar.titulo = tarea;
-    tareaEditar.descripcion = descripcion;
-
-    idEditar = null;
-    }
-
-
     name.value = "";
     description.value = "";
-
     render();
 }
 
@@ -54,7 +51,6 @@ function eliminarTarea(id) {
 }
 
 function editarTarea(id) {
-
     const tarea = tareas.find(function(t) {
         return t.id === id;
     });
@@ -63,7 +59,26 @@ function editarTarea(id) {
     description.value = tarea.descripcion;
 
     idEditar = id;
+}
 
+function verTarea(id) {
+    const tarea = tareas.find(function(t) {
+        return t.id === id;
+    });
+
+    if (tarea === undefined) return;
+    alert("Tarea: " + tarea.titulo + "\n\nDescripción: " + tarea.descripcion);
+}
+
+function cambiarEstadoTarea(id) {
+    const tarea = tareas.find(function(t) {
+        return t.id === id;
+    });
+
+    if (tarea === undefined) return;
+
+    tarea.completada = !tarea.completada;
+    render();
 }
 
 function render() {
@@ -73,6 +88,12 @@ function render() {
     tareas.forEach(function(tarea) {
 
         const li = document.createElement("li");
+        li.className = tarea.completada ? "completada" : "";
+
+        const check = document.createElement("input");
+        check.className = "complete";
+        check.type = "checkbox";
+        check.checked = tarea.completada;
 
         const titulo = document.createElement("h3");
         titulo.textContent = tarea.titulo;
@@ -84,25 +105,39 @@ function render() {
         botonEliminar.textContent = "Eliminar";
 
         const botonEditar = document.createElement("button");
+        botonEditar.className = "btnEditar";
         botonEditar.textContent = "Editar";
 
+        const botonVer = document.createElement("button");
+        botonVer.className = "btnVer";
+        botonVer.textContent = "Ver";
+
+        botonEliminar.className = "btnEliminar";
+
+        li.appendChild(check);
         li.appendChild(titulo);
         li.appendChild(descripcion);
+        li.appendChild(botonVer);
         li.appendChild(botonEliminar);
         li.appendChild(botonEditar);
 
         listaTareas.appendChild(li);
         
         botonEliminar.addEventListener("click", function() {
-        eliminarTarea(tarea.id);
+            eliminarTarea(tarea.id);
         });
 
         botonEditar.addEventListener("click", function() {
-        editarTarea(tarea.id);
+            editarTarea(tarea.id);
         });
 
-        
+        botonVer.addEventListener("click", function() {
+            verTarea(tarea.id);
+        });
 
+        check.addEventListener("change", function() {
+            cambiarEstadoTarea(tarea.id);
+        });
     });
 
 }

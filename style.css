@@ -83,10 +83,10 @@ button {
 
 .lista-tareas li {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto auto;
+  grid-template-columns: auto minmax(0, 1fr) auto auto auto;
   grid-template-areas:
-    "titulo eliminar editar"
-    "descripcion eliminar editar";
+    "casilla titulo ver eliminar editar"
+    "casilla descripcion ver eliminar editar";
   align-items: center;
   column-gap: 16px;
   padding: 12px 16px;
@@ -101,6 +101,12 @@ button {
   font-size: 14px;
 }
 
+.casilla-completada {
+  grid-area: casilla;
+  margin: 0;
+  accent-color: #198754;
+}
+
 .lista-tareas p {
   grid-area: descripcion;
   margin: 0;
@@ -111,20 +117,33 @@ button {
   flex: 0 0 auto;
 }
 
-.lista-tareas li > button:first-of-type {
+.btnVer {
+  grid-area: ver;
+  background: #0d6efd;
+}
+
+.btnVer:hover { background: #0b5ed7; }
+
+.btnEliminar {
   grid-area: eliminar;
   background: #dc3545;
 }
 
-.lista-tareas li > button:first-of-type:hover { background: #bb2d3b; }
+.btnEliminar:hover { background: #bb2d3b; }
 
-.lista-tareas li > button:last-of-type {
+.btnEditar {
   grid-area: editar;
   background: #ffc107;
   color: #212529;
 }
 
-.lista-tareas li > button:last-of-type:hover { background: #e0a800; }
+.btnEditar:hover { background: #e0a800; }
+
+.completada h3,
+.completada p {
+  color: #6c757d;
+  text-decoration: line-through;
+}
 
 @media (max-width: 560px) {
   .contenedor { margin: 10px 12px 0; }
