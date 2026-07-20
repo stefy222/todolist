@@ -6,11 +6,33 @@ const btnAdd = document.querySelector(".btnAdd");
 let tareas = [];
 let idEditar = null;
 let siguienteId = 1;
+const localTasks = "tareas";
 
-btnAdd.addEventListener("click", agregarTarea);
+btnAdd.addEventListener("click", addTasks);
+    storageTasks();
+
+function saveTasks() {
+    localStorage.setItem(localTasks, JSON.stringify(tareas));
+}
+
+function storageTasks() {
+    let tareasLocal = localStorage.getItem(localTasks);
+
+    if (tareasLocal !== null) {
+        tareas = JSON.parse(tareasLocal);
+    }
+
+    if (tareas.length > 0) {
+        siguienteId = Math.max(...tareas.map(function(tarea) {
+            return tarea.id;
+        })) + 1;
+    }
+
+    render();
+}
 
 
-function agregarTarea() {
+function addTasks() {
     let tarea = name.value.trim();
     let descripcion = description.value.trim();
 
@@ -39,18 +61,20 @@ function agregarTarea() {
     }
     name.value = "";
     description.value = "";
+    saveTasks();
     render();
 }
 
-function eliminarTarea(id) {
+function removeTasks(id) {
     tareas = tareas.filter(function(tarea) {
         return tarea.id !== id;
     });
 
+    saveTasks();
     render(); 
 }
 
-function editarTarea(id) {
+function editeTasks(id) {
     const tarea = tareas.find(function(t) {
         return t.id === id;
     });
@@ -61,7 +85,7 @@ function editarTarea(id) {
     idEditar = id;
 }
 
-function verTarea(id) {
+function viewTasks(id) {
     const tarea = tareas.find(function(t) {
         return t.id === id;
     });
@@ -70,7 +94,7 @@ function verTarea(id) {
     alert("Tarea: " + tarea.titulo + "\n\nDescripción: " + tarea.descripcion);
 }
 
-function cambiarEstadoTarea(id) {
+function changeTasks(id) {
     const tarea = tareas.find(function(t) {
         return t.id === id;
     });
@@ -78,6 +102,7 @@ function cambiarEstadoTarea(id) {
     if (tarea === undefined) return;
 
     tarea.completada = !tarea.completada;
+    saveTasks();
     render();
 }
 
@@ -124,19 +149,19 @@ function render() {
         listaTareas.appendChild(li);
         
         botonEliminar.addEventListener("click", function() {
-            eliminarTarea(tarea.id);
+            removeTasks(tarea.id);
         });
 
         botonEditar.addEventListener("click", function() {
-            editarTarea(tarea.id);
+            editeTasks(tarea.id);
         });
 
         botonVer.addEventListener("click", function() {
-            verTarea(tarea.id);
+            viewTasks(tarea.id);
         });
 
         check.addEventListener("change", function() {
-            cambiarEstadoTarea(tarea.id);
+            changeTasks(tarea.id);
         });
     });
 
