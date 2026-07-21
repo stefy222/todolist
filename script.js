@@ -1,168 +1,179 @@
-const listaTareas = document.getElementById("listaTareas");
-const name = document.querySelector('input[type="text"]');
-const description = document.querySelector("textarea");
-const btnAdd = document.querySelector(".btnAdd");
+const taskList = document.getElementById("listaTareas");
+const titleInput = document.querySelector('input[type="text"]');
+const descriptionInput = document.querySelector("textarea");
+const addButton = document.querySelector(".btnAdd");
 
-let tareas = [];
-let idEditar = null;
-let siguienteId = 1;
-const localTasks = "tareas";
+let tasks = [];
+let editingTaskId = null;
+let nextTaskId = 1;
+const localStorageKey = "tasks";
 
-btnAdd.addEventListener("click", addTasks);
-    storageTasks();
+addButton.addEventListener("click", addTask);
+loadTasks();
 
 function saveTasks() {
-    localStorage.setItem(localTasks, JSON.stringify(tareas));
+    localStorage.setItem(localStorageKey, JSON.stringify(tasks));
 }
 
-function storageTasks() {
-    let tareasLocal = localStorage.getItem(localTasks);
+function loadTasks() {
+    const storedTasks = localStorage.getItem(localStorageKey);
 
-    if (tareasLocal !== null) {
-        tareas = JSON.parse(tareasLocal);
+    if (storedTasks !== null) {
+        tasks = JSON.parse(storedTasks);
     }
 
-    if (tareas.length > 0) {
-        siguienteId = Math.max(...tareas.map(function(tarea) {
-            return tarea.id;
-        })) + 1;
+    if (tasks.length > 0) {
+        nextTaskId =
+            Math.max(
+                ...tasks.map(function (task) {
+                    return task.id;
+                })
+            ) + 1;
     }
 
-    render();
+    renderTasks();
 }
 
+function addTask() {
+    const title = titleInput.value.trim();
+    const description = descriptionInput.value.trim();
 
-function addTasks() {
-    let tarea = name.value.trim();
-    let descripcion = description.value.trim();
-
-    if (tarea === "") {
+    if (title === "") {
         return;
     }
 
-    if (idEditar === null) {
-        tareas.push({
-            id: siguienteId++,
-            titulo: tarea,
-            descripcion: descripcion,
-            completada: false
+    if (editingTaskId === null) {
+        tasks.push({
+            id: nextTaskId++,
+            title: title,
+            description: description,
+            completed: false
         });
     } else {
-        const tareaEditar = tareas.find(function(t) {
-            return t.id === idEditar;
+        const editingTask = tasks.find(function (task) {
+            return task.id === editingTaskId;
         });
-        if (tareaEditar === undefined) {
-            idEditar = null;
+
+        if (editingTask === undefined) {
+            editingTaskId = null;
             return;
         }
-        tareaEditar.titulo = tarea;
-        tareaEditar.descripcion = descripcion;
-        idEditar = null;
+
+        editingTask.title = title;
+        editingTask.description = description;
+        editingTaskId = null;
     }
-    name.value = "";
-    description.value = "";
-    saveTasks();
-    render();
-}
 
-function removeTasks(id) {
-    tareas = tareas.filter(function(tarea) {
-        return tarea.id !== id;
-    });
+    titleInput.value = "";
+    descriptionInput.value = "";
 
     saveTasks();
-    render(); 
+    renderTasks();
 }
 
-function editeTasks(id) {
-    const tarea = tareas.find(function(t) {
-        return t.id === id;
+function deleteTask(id) {
+    tasks = tasks.filter(function (task) {
+        return task.id !== id;
     });
 
-    name.value = tarea.titulo;
-    description.value = tarea.descripcion;
-
-    idEditar = id;
-}
-
-function viewTasks(id) {
-    const tarea = tareas.find(function(t) {
-        return t.id === id;
-    });
-
-    if (tarea === undefined) return;
-    alert("Tarea: " + tarea.titulo + "\n\nDescripción: " + tarea.descripcion);
-}
-
-function changeTasks(id) {
-    const tarea = tareas.find(function(t) {
-        return t.id === id;
-    });
-
-    if (tarea === undefined) return;
-
-    tarea.completada = !tarea.completada;
     saveTasks();
-    render();
+    renderTasks();
 }
 
-function render() {
-
-    listaTareas.innerHTML = "";
-
-    tareas.forEach(function(tarea) {
-
-        const li = document.createElement("li");
-        li.className = tarea.completada ? "completada" : "";
-
-        const check = document.createElement("input");
-        check.className = "complete";
-        check.type = "checkbox";
-        check.checked = tarea.completada;
-
-        const titulo = document.createElement("h3");
-        titulo.textContent = tarea.titulo;
-
-        const descripcion = document.createElement("p");
-        descripcion.textContent = tarea.descripcion;
-
-        const botonEliminar = document.createElement("button");
-        botonEliminar.textContent = "Eliminar";
-
-        const botonEditar = document.createElement("button");
-        botonEditar.className = "btnEditar";
-        botonEditar.textContent = "Editar";
-
-        const botonVer = document.createElement("button");
-        botonVer.className = "btnVer";
-        botonVer.textContent = "Ver";
-
-        botonEliminar.className = "btnEliminar";
-
-        li.appendChild(check);
-        li.appendChild(titulo);
-        li.appendChild(descripcion);
-        li.appendChild(botonVer);
-        li.appendChild(botonEliminar);
-        li.appendChild(botonEditar);
-
-        listaTareas.appendChild(li);
-        
-        botonEliminar.addEventListener("click", function() {
-            removeTasks(tarea.id);
-        });
-
-        botonEditar.addEventListener("click", function() {
-            editeTasks(tarea.id);
-        });
-
-        botonVer.addEventListener("click", function() {
-            viewTasks(tarea.id);
-        });
-
-        check.addEventListener("change", function() {
-            changeTasks(tarea.id);
-        });
+function editTask(id) {
+    const task = tasks.find(function (task) {
+        return task.id === id;
     });
 
+    if (task === undefined) {
+        return;
+    }
+
+    titleInput.value = task.title;
+    descriptionInput.value = task.description;
+    editingTaskId = id;
+}
+
+function viewTask(id) {
+    const task = tasks.find(function (task) {
+        return task.id === id;
+    });
+
+    if (task === undefined) {
+        return;
+    }
+
+    alert("Task: " + task.title + "\n\nDescription: " + task.description);
+}
+
+function toggleTaskStatus(id) {
+    const task = tasks.find(function (task) {
+        return task.id === id;
+    });
+
+    if (task === undefined) {
+        return;
+    }
+
+    task.completed = !task.completed;
+
+    saveTasks();
+    renderTasks();
+}
+
+function renderTasks() {
+    taskList.innerHTML = "";
+
+    tasks.forEach(function (task) {
+        const taskItem = document.createElement("li");
+        taskItem.className = task.completed ? "completed" : "";
+
+        const completedCheckbox = document.createElement("input");
+        completedCheckbox.className = "complete";
+        completedCheckbox.type = "checkbox";
+        completedCheckbox.checked = task.completed;
+
+        const title = document.createElement("h3");
+        title.textContent = task.title;
+
+        const description = document.createElement("p");
+        description.textContent = task.description;
+
+        const viewButton = document.createElement("button");
+        viewButton.className = "btnVer";
+        viewButton.textContent = "View";
+
+        const deleteButton = document.createElement("button");
+        deleteButton.className = "btnEliminar";
+        deleteButton.textContent = "Delete";
+
+        const editButton = document.createElement("button");
+        editButton.className = "btnEditar";
+        editButton.textContent = "Edit";
+
+        taskItem.appendChild(completedCheckbox);
+        taskItem.appendChild(title);
+        taskItem.appendChild(description);
+        taskItem.appendChild(viewButton);
+        taskItem.appendChild(deleteButton);
+        taskItem.appendChild(editButton);
+
+        taskList.appendChild(taskItem);
+
+        deleteButton.addEventListener("click", function () {
+            deleteTask(task.id);
+        });
+
+        editButton.addEventListener("click", function () {
+            editTask(task.id);
+        });
+
+        viewButton.addEventListener("click", function () {
+            viewTask(task.id);
+        });
+
+        completedCheckbox.addEventListener("change", function () {
+            toggleTaskStatus(task.id);
+        });
+    });
 }

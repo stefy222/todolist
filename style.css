@@ -101,7 +101,7 @@ button {
   font-size: 14px;
 }
 
-.casilla-completada {
+.complete {
   grid-area: casilla;
   margin: 0;
   accent-color: #198754;
@@ -139,8 +139,8 @@ button {
 
 .btnEditar:hover { background: #e0a800; }
 
-.completada h3,
-.completada p {
+.completed h3,
+.completed p {
   color: #6c757d;
   text-decoration: line-through;
 }
